@@ -1,0 +1,47 @@
+package converter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
+import javax.inject.Named;
+
+import dominio.Carro;
+
+
+
+@Named
+@FacesConverter(value = "carroConverter", forClass = Carro.class)
+public class CarroConverter implements Converter {
+	
+	private static final String key = "converter.CarroConverter";
+	
+	@Override
+	public Object getAsObject(FacesContext context, UIComponent component, String value) {
+		if (value.isEmpty()) {
+	        return null;
+	    }
+	    return getViewMap(context).get(value);
+	}
+
+	@Override
+	public String getAsString(FacesContext context, UIComponent component, Object carro) {
+		String id = ((Carro)carro).getId().toString();
+		getViewMap(context).put(id, carro);
+	    return id;
+	}
+	
+	private Map<String, Object> getViewMap(FacesContext context) {
+	    Map<String, Object> viewMap = context.getViewRoot().getViewMap();
+	    @SuppressWarnings({ "unchecked", "rawtypes" })
+	    Map<String, Object> idMap = (Map) viewMap.get(key);
+	    if (idMap == null) {
+	        idMap = new HashMap<String, Object>();
+	        viewMap.put(key, idMap);
+	    }
+	    return idMap;
+	}
+}
